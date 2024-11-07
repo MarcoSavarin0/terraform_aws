@@ -1,0 +1,1 @@
+para hacer el alb saque la informacion de aca https://medium.com/@nagarjun_nagesh/terraform-alb-with-2-ec2-instances-on-aws-4aae237aac21 
