@@ -1,18 +1,21 @@
 
-resource "aws_instance" "testing" {
-  ami               = "ami-0866a3c8686eaeeba"
-  instance_type     = "t2.micro"
-  availability_zone = "us-east-1a"
-  key_name          = "terraform"
-  subnet_id         = module.vpc.private_subnets[0]
-  depends_on        = [module.vpc]
-}
-resource "aws_instance" "produccion" {
-  ami               = "ami-0866a3c8686eaeeba"
-  instance_type     = "t2.micro"
-  availability_zone = "us-east-1b"
-  key_name          = "terraform"
-  subnet_id         = module.vpc.public_subnets[1]
-  depends_on        = [module.vpc]
+resource "aws_instance" "web-server" {
+  ami                         = "ami-01cc34ab2709337aa"
+  instance_type               = "t2.micro"
+  availability_zone           = "us-east-1b"
+  count                       = 2
+  key_name                    = "terraform"
+  subnet_id                   = module.vpc.public_subnets[1]
+  depends_on                  = [module.vpc]
+  security_groups             = [aws_security_group.web-server.id]
   associate_public_ip_address = true
+  user_data                   = <<-EOF
+       #!/bin/bash
+       sudo su
+        yum update -y
+        yum install httpd -y
+        systemctl start httpd
+        systemctl enable httpd
+        echo "<html><h1> Hola estos desde la ip $(hostname -f)...</p> </h1></html>" >> /var/www/html/index.html
+    EOF
 }
